@@ -47,6 +47,23 @@ public class ResultSetTest {
                         id = ?
                     """;
 
+            PreparedStatement singleResultStmt = conn.prepareStatement(selectSpecificProductQuery);
+            singleResultStmt.setLong(1, targetMemberId);
+
+            ResultSet singleRs = singleResultStmt.executeQuery();
+
+            if ( singleRs.next() ) {
+                long id = singleRs.getLong("id");
+                String name = singleRs.getString("name");
+                int price = singleRs.getInt("price");
+                int stock = singleRs.getInt("stock");
+
+                System.out.printf("%d번 상품 %s, 가격: %d, 재고:%d\n", id, name, price, stock);
+            }
+            System.out.println();
+
+            singleRs.close();
+            singleResultStmt.close();
 
         } catch ( Exception e) {
             throw new RuntimeException(e);
