@@ -10,6 +10,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 public class JdbcTemplate {
 
@@ -56,5 +57,45 @@ public class JdbcTemplate {
 
     }
 
+    // 단건조회
+    public <T> Optional<T> queryForOptional(
+            String sql,
+            StatementPlaceHolderBinder pss,
+            RowMapper<T> mapper
+    ) {
+
+        List<T> results = queryForList(sql, pss, mapper);
+
+        if ( results.isEmpty() ) {
+            return Optional.empty();
+        }
+
+        if (  results.size() > 1 ) {
+            throw new RuntimeException("Too many results");
+        }
+
+        return Optional.of(results.getFirst());
+
+    }
+
+    public <T> T queryForObject(
+            String sql,
+            StatementPlaceHolderBinder pss,
+            RowMapper<T> mapper
+    ) {
+
+        List<T> results = queryForList(sql, pss, mapper);
+
+        if ( results.isEmpty() ) {
+            throw new RuntimeException("No result!");
+        }
+
+        if (  results.size() > 1 ) {
+            throw new RuntimeException("Too many results");
+        }
+
+        return results.getFirst();
+
+    }
 
 }
