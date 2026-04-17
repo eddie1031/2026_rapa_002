@@ -98,4 +98,36 @@ public class JdbcTemplate {
 
     }
 
+    public Long insertAndReturnKey(
+            String sql,
+            StatementPlaceHolderBinder pss
+    ) {
+
+        try (
+                Connection connection = dataSource.getConnection();
+                PreparedStatement stmt = connection.prepareStatement(sql);
+        ) {
+
+            if ( pss != null ) {
+                pss.set(stmt);
+            }
+
+            stmt.executeUpdate();
+
+            try (ResultSet rs = stmt.getGeneratedKeys() ) {
+                if ( rs.next() )
+                    return rs.getLong(1);
+                return null;
+            }
+
+        } catch ( SQLException e) {
+            throw new RuntimeException(e);
+        }
+
+
+
+    }
+
+
+    
 }
